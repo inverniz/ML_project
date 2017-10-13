@@ -5,9 +5,9 @@ from implementations import *
   
 def main():
     y, tx, ids = load_csv_data("data/train.csv")
-    initial_w = np.ones(30)
+    initial_w = np.zeros(30)
     max_iters = 10
-    gamma = 1
+    gamma = 0.7
     
     w1, loss1 = least_squares_GD(y, tx, initial_w, max_iters, gamma)
     w2, loss2 = least_squares_SGD(y, tx, initial_w, max_iters, gamma)
