@@ -60,16 +60,22 @@ def least_squares_SGD(y, tx, initial_w, max_iters, gamma):
 	
 """Least squares regression using normal equations."""
 def least_squares(y, tx):
-    w = np.linalg.solve(X, y)
-    loss = compute_loss(y, tx, w)
+    w = np.linalg.lstsq(tx, y)[0]
+    loss = compute_loss_GD(y, tx, w)
     
     return w, loss
 
 
 """Ridge regression using normal equations."""
 def ridge_regression(y, tx, lambda_ ):
-    w = 0
-    loss = 0
+    n = y.shape[0]
+    txt = tx.T
+    id_matrix = np.eye(n)
+    _lambda_ = 2*n*lambda_
+    pseudoinverse = np.linalg.pinv(txt.dot(tx) + _lambda_*id_matrix)
+    
+    w = pseudoinverse.dot(txt).dot(y)
+    loss = compute_loss_GD(y, tx, w)
     
     return w, loss
 
