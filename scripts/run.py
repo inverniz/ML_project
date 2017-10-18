@@ -4,7 +4,7 @@ from proj1_helpers import *
 from implementations import *
   
 def main():
-    y, tx, ids = load_csv_data("data/train.csv")
+    y, tx, ids = load_csv_data("data/train.csv", sub_sample=True)
     initial_w = np.zeros(30)
     max_iters = 10
     gamma = 0.7

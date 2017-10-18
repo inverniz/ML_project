@@ -19,26 +19,19 @@ def compute_gradient_SGD(yn, txn, w):
 	return gradient
 
 """Calculate the loss for GD."""
-def compute_loss_GD(y, tx, w):
+def compute_loss(y, tx, w):
     error = y - tx.dot(w)
     n = y.shape[0]
     loss = error.T.dot(error)/(2*n)
     
     return loss
-    
-"""Calculate the loss for SGD."""
-def compute_loss_SGD(yn, txn, w):
-    error = yn - txn.dot(w)
-    loss = error/2
-    
-    return loss 
        
 """Linear regression using gradient descent."""
 def least_squares_GD(y, tx, initial_w, max_iters, gamma):
     w = initial_w
     for n_iter in range(max_iters):
         gradient = compute_gradient_GD(y, tx, w)
-        loss = compute_loss_GD(y, tx, w)
+        loss = compute_loss(y, tx, w)
         w = w - gamma*gradient
     return w, loss
 
@@ -46,37 +39,33 @@ def least_squares_GD(y, tx, initial_w, max_iters, gamma):
 def least_squares_SGD(y, tx, initial_w, max_iters, gamma):
     w = initial_w
     n = y.shape[0]
-    loss = 0
     for n_iter in range(max_iters):
 	    index = np.random.random_integers(0, n-1)
 	    yn = y[index]
 	    txn = tx[index]
 	    gradient = compute_gradient_SGD(yn, txn, w)
-	    partial_loss = compute_loss_SGD(yn, txn, w)
-	    loss += partial_loss
 	    w = w - gamma*gradient	
-    loss/= n
+    loss = compute_loss(y, tx, w)
     return w, loss
 	
 """Least squares regression using normal equations."""
 def least_squares(y, tx):
     w = np.linalg.lstsq(tx, y)[0]
-    loss = compute_loss_GD(y, tx, w)
-    
+    loss = compute_loss(y, tx, w)
     return w, loss
 
 
 """Ridge regression using normal equations."""
 def ridge_regression(y, tx, lambda_ ):
-    n = y.shape[0]
+    n = tx.shape[0]
+    dimensionality = tx.shape[1]
     txt = tx.T
-    id_matrix = np.eye(n)
+    id_matrix = np.eye(dimensionality)
     _lambda_ = 2*n*lambda_
     pseudoinverse = np.linalg.pinv(txt.dot(tx) + _lambda_*id_matrix)
     
     w = pseudoinverse.dot(txt).dot(y)
-    loss = compute_loss_GD(y, tx, w)
-    
+    loss = compute_loss(y, tx, w)
     return w, loss
 
 
