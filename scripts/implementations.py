@@ -1,49 +1,59 @@
 
 """some machine learning methods for project 1."""
 import numpy as np
+import numpy.linalg as la
+from helpers import *
 
 """Linear regression using gradient descent."""
-def least squares GD(y, tx, initial w, max iters, gamma):
-    w = 0
-    loss = 0
-    
-    return w, loss
+def least_squares_GD(y, tx, initial_w, max_iters, gamma):
+    w = initial_w
+    for n_iter in range(max_iters):
+        gradient = compute_gradient(y, tx, w)
+        w = w - gamma*gradient
+    return w, compute_mse(y, tx, w)
 
 
 """Linear regression using stochastic gradient descent."""
-def least squares SGD(y, tx, initial w, max iters, gamma):
-    w = 0
-    loss = 0
-    
-    return w, loss
+def least_squares_SGD(y, tx, initial_w, max_iters, gamma):
+    data_size = len(y)
+    w = initial_w
+    for idx in np.random.randint(0,data_size-1,max_iters):
+        minibatch_y = np.array([y[idx]])
+        minibatch_tx = np.array([tx[idx]])
+        #print(minibatch_y.shape)
+        #print(minibatch_tx.shape)
+        #print(w.shape)
+        gradient = compute_gradient(minibatch_y, minibatch_tx, w)
+        w = w - gamma * gradient
+    return w, compute_mse(y, tx, w)
 
 
 """Least squares regression using normal equations."""
-def least squares(y, tx):
-    w = 0
-    loss = 0
-    
-    return w, loss
+def least_squares(y, tx):
+    w = la.pinv(tx) @ y
+    return w, compute_mse(y, tx, w)
 
 
 """Ridge regression using normal equations."""
-def ridge regression(y, tx, lambda ):
-    w = 0
-    loss = 0
-    
-    return w, loss
+def ridge_regression(y, tx, lambda_):
+    w = la.pinv(tx.T @ tx + (lambda_ * 2 * tx.shape[0]) * np.identity(tx.shape[1])) @ tx.T @ y
+    return w, compute_mse(y, tx, w)
 
 
 """Logistic regression using gradient descent or SGD."""
-def logistic regression(y, tx, initial w, max iters, gamma):
-    w = 0
-    loss = 0
-    
-    return w, loss
+def logistic_regression(y, tx, initial_w, max_iters, gamma):
+    w = np.zeros((tx.shape[1],1))
+    data_size = len(y)
+    for iter, idx in enumerate(np.random.randint(0,data_size-1,max_iters)):
+        minibatch_y = np.array([y[idx]])
+        minibatch_tx = np.array([tx[idx]])
+        grad = compute_gradient_logistic(minibatch_y, minibatch_tx, w)
+        w = w - gamma * grad
+    return w, compute_loss_logistic(y, tx, w)
 
 
 """Regularized logistic regression using gradient descent or SGD."""
-def reg logistic regression(y, tx, lambda , initial w, max iters, gamma):
+def reg_logistic_regression(y, tx, lambda_, initial_w, max_iters, gamma):
     w = 0
     loss = 0
     
