@@ -23,7 +23,7 @@ def main():
     predictions3 = predict_labels(w3, tx)
     predictions4 = predict_labels(w4, tx)
     
-    print(w2, loss2)
+    #print(w2, loss2)
     create_csv_submission(ids, predictions1, "predictions1.csv")
     create_csv_submission(ids, predictions2, "predictions2.csv")
     create_csv_submission(ids, predictions3, "predictions3.csv")
