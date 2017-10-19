@@ -20,10 +20,7 @@ def least_squares_SGD(y, tx, initial_w, max_iters, gamma):
     for idx in np.random.randint(0,data_size-1,max_iters):
         minibatch_y = np.array([y[idx]])
         minibatch_tx = np.array([tx[idx]])
-        #print(minibatch_y.shape)
-        #print(minibatch_tx.shape)
-        #print(w.shape)
-        gradient = compute_gradient(minibatch_y, minibatch_tx, w)
+        gradient = compute_gradient(minibatch_y, minibatch_tx, w)/data_size
         w = w - gamma * gradient
     return w, compute_mse(y, tx, w)
 
@@ -45,7 +42,7 @@ def logistic_regression(y, tx, initial_w, max_iters, gamma):
     w = np.zeros((tx.shape[1],1))
     data_size = len(y)
     for iter, idx in enumerate(np.random.randint(0,data_size-1,max_iters)):
-        minibatch_y = np.array([y[idx]])
+        minibatch_y = np.array(y[idx])
         minibatch_tx = np.array([tx[idx]])
         grad = compute_gradient_logistic(minibatch_y, minibatch_tx, w)
         w = w - gamma * grad
@@ -54,7 +51,11 @@ def logistic_regression(y, tx, initial_w, max_iters, gamma):
 
 """Regularized logistic regression using gradient descent or SGD."""
 def reg_logistic_regression(y, tx, lambda_, initial_w, max_iters, gamma):
-    w = 0
-    loss = 0
-    
-    return w, loss
+    w = np.zeros((tx.shape[1],1))
+    data_size = len(y)
+    for iter, idx in enumerate(np.random.randint(0,data_size-1,max_iters)):
+        minibatch_y = np.array(y[idx])
+        minibatch_tx = np.array([tx[idx]])
+        grad = compute_gradient_logistic_reg(minibatch_y, minibatch_tx, w, lambda_)
+        w = w - gamma * grad
+    return w, compute_loss_logistic_reg(y, tx, w, lambda_)
