@@ -14,7 +14,8 @@ def least_squares_GD(y, tx, initial_w, max_iters, gamma):
 
 
 """Linear regression using stochastic gradient descent."""
-def least_squares_SGD(y, tx, initial_w, max_iters, gamma):
+def least_squares_SGD(y, tx, initial_w, max_iters, gamma, seed=1):
+    np.random.seed(seed)
     data_size = len(y)
     w = initial_w
     for idx in np.random.randint(0,data_size-1,max_iters):
@@ -38,8 +39,9 @@ def ridge_regression(y, tx, lambda_):
 
 
 """Logistic regression using gradient descent or SGD."""
-def logistic_regression(y, tx, initial_w, max_iters, gamma):
-    w = np.zeros((tx.shape[1],1))
+def logistic_regression(y, tx, initial_w, max_iters, gamma, seed=1):
+    np.random.seed(seed)
+    w = initial_w
     data_size = len(y)
     for iter, idx in enumerate(np.random.randint(0,data_size-1,max_iters)):
         minibatch_y = np.array(y[idx])
@@ -50,8 +52,9 @@ def logistic_regression(y, tx, initial_w, max_iters, gamma):
 
 
 """Regularized logistic regression using gradient descent or SGD."""
-def reg_logistic_regression(y, tx, lambda_, initial_w, max_iters, gamma):
-    w = np.zeros((tx.shape[1],1))
+def reg_logistic_regression(y, tx, lambda_, initial_w, max_iters, gamma, seed=1):
+    np.random.seed(seed)
+    w = inital_w
     data_size = len(y)
     for iter, idx in enumerate(np.random.randint(0,data_size-1,max_iters)):
         minibatch_y = np.array(y[idx])
