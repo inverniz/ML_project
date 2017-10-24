@@ -7,9 +7,18 @@ from helpers import *
 """Linear regression using gradient descent."""
 def least_squares_GD(y, tx, initial_w, max_iters, gamma):
     w = initial_w
+    # Arbitrary, needs tweaking
+    prev_loss = 10000
     for n_iter in range(max_iters):
         gradient = compute_gradient(y, tx, w)
         w = w - gamma*gradient
+        loss = compute_mse(y, tx, w)
+        if n_iter != 0 and np.abs(loss - prev_loss) < 1e-6:
+            break
+        if n_iter % 1000 == 0:
+            print('At', n_iter)
+        prev_loss = loss
+    print('Stopped at', n_iter, 'iterations')
     return w, compute_mse(y, tx, w)
 
 
@@ -54,7 +63,7 @@ def logistic_regression(y, tx, initial_w, max_iters, gamma, seed=1):
 """Regularized logistic regression using gradient descent or SGD."""
 def reg_logistic_regression(y, tx, lambda_, initial_w, max_iters, gamma, seed=1):
     np.random.seed(seed)
-    w = inital_w
+    w = initial_w
     data_size = len(y)
     for iter, idx in enumerate(np.random.randint(0,data_size-1,max_iters)):
         minibatch_y = np.array(y[idx])

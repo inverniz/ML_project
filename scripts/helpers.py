@@ -37,7 +37,7 @@ def compute_loss_logistic(y, tx, w):
     return - loss/y.shape[0]
 
 def compute_loss_logistic_reg(y, tx, w, lambda_):
-    return compute_loss_logistic(y, tx, w) + lambda_/2.0 * (w.T @ w)[0][0]
+    return compute_loss_logistic(y, tx, w) + lambda_/2.0 * (w.T @ w)
 
 def compute_gradient_logistic(y, tx, w):
     """compute the gradient of loss."""
