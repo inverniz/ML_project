@@ -1,6 +1,7 @@
 import numpy as np
 import numpy.linalg as la
 from scipy.misc import logsumexp
+from implementations import *
 
 def compute_mse(y, tx, w):
     e = y - tx.dot(w)
@@ -17,6 +18,11 @@ def compute_gradient(y, tx, w):
 def sigmoid(t):
     """apply sigmoid function on t."""
     return 1.0/(np.exp(-t)+1)
+
+def build_poly(tx, degree):
+    if degree <= 1:
+        return tx
+    return np.column_stack([tx] + [tx[:,1:]**k for k in range(2,degree+1)])
 
 def compute_loss_logistic(y, tx, w):
     """compute the cost by negative log likelihood."""
@@ -45,3 +51,11 @@ def compute_gradient_logistic_reg(y, tx, w, lambda_):
 
 def standardize(x):
     return (x - np.mean(x, axis=0))/np.std(x, axis=0)
+
+def ridge_regression_with_poly(y, tx, lambda_, degree):
+    tx_ridge = build_poly(tx, degree)
+    return ridge_regression(y, tx_ridge, lambda_)
+
+def compute_mse_with_poly(y, tx, w, degree):
+    tx_poly = build_poly(tx, degree)
+    return compute_mse(y, tx_poly, w)

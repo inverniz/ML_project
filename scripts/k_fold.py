@@ -11,6 +11,7 @@ def build_k_indices(y, k_fold, seed):
                  for k in range(k_fold)]
     return np.array(k_indices)
 
+
 def cross_validation(y, x, k_fold, function, loss_function, sup_args={}, sup_args_loss={}, seed = 1):
     k_indices = build_k_indices(y, k_fold, 1)
     total_loss_tr = 0
