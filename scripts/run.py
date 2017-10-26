@@ -6,8 +6,33 @@ y, x, ids = load_csv_data('../data/train.csv')
 print("Shape of x:",x.shape)
 print("Shape of y:",y.shape)
 labels = np.array(np.genfromtxt('../data/train.csv', delimiter=",", names=True).dtype.names[2:])
-filter_ = [idx for idx, label in enumerate(labels) if not 'phi' in label]
-x = x[:, filter_]
+#filter_ = [idx for idx, label in enumerate(labels) if not 'phi' in label]
+#x = x[:, filter_]
+def x_y_for_jet(n):
+    jet_num = x[:, 22] == n
+    x_jet = x[jet_num]
+    y_jet = y[jet_num]
+    jet_mean = np.mean(x_jet, axis=0)
+    x_jet = x_jet[:, (jet_mean != -999) & (jet_mean != 0) & (jet_mean != n)]
+    return x_jet, y_jet
+ws = []
+means = []
+stds = []
+losses = []
+for n in range(4):
+    x_jet, y_jet = x_y_for_jet(n)
+
+    tx_jet = np.c_[np.ones(len(y_jet)), x_jet]
+
+    mean = np.mean(x_jet, axis=0)
+    means.append(mean)
+    std = np.std(x_jet, axis=0)
+    stds.append(std)
+    w, loss = ridge_regression(y_jet, tx_jet, 1e-6)
+    ws.append(w)
+    losses.append(loss)
+
+
 x = (x - np.mean(x, axis=0))/np.std(x, axis=0)
 y = (y+1)/2.0
 num_samples = len(y)
