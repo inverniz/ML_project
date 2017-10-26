@@ -13,12 +13,9 @@ def least_squares_GD(y, tx, initial_w, max_iters, gamma):
         gradient = compute_gradient(y, tx, w)
         w = w - gamma*gradient
         loss = compute_mse(y, tx, w)
-        if n_iter != 0 and np.abs(loss - prev_loss) < 1e-6:
+        if n_iter != 0 and np.abs(loss - prev_loss) < 1e-3:
             break
-        if n_iter % 1000 == 0:
-            print('At', n_iter)
         prev_loss = loss
-    print('Stopped at', n_iter, 'iterations')
     return w, compute_mse(y, tx, w)
 
 
@@ -57,6 +54,7 @@ def logistic_regression(y, tx, initial_w, max_iters, gamma, seed=1):
         minibatch_tx = np.array([tx[idx]])
         grad = compute_gradient_logistic(minibatch_y, minibatch_tx, w)
         w = w - gamma * grad
+    #return w, compute_mse(y, tx, w)
     return w, compute_loss_logistic(y, tx, w)
 
 
@@ -70,4 +68,5 @@ def reg_logistic_regression(y, tx, lambda_, initial_w, max_iters, gamma, seed=1)
         minibatch_tx = np.array([tx[idx]])
         grad = compute_gradient_logistic_reg(minibatch_y, minibatch_tx, w, lambda_)
         w = w - gamma * grad
+    #return w, compute_mse(y, tx, w)
     return w, compute_loss_logistic_reg(y, tx, w, lambda_)

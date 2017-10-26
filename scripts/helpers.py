@@ -45,3 +45,6 @@ def compute_gradient_logistic(y, tx, w):
 
 def compute_gradient_logistic_reg(y, tx, w, lambda_):
     return compute_gradient_logistic(y, tx, w) + lambda_ * w
+
+def standardize(x):
+    return (x - np.mean(x, axis=0))/np.std(x, axis=0)
