@@ -13,7 +13,7 @@ def least_squares_GD(y, tx, initial_w, max_iters, gamma):
         gradient = compute_gradient(y, tx, w)
         w = w - gamma*gradient
         loss = compute_mse(y, tx, w)
-        if n_iter != 0 and np.abs(loss - prev_loss) < 1e-3:
+        if n_iter != 0 and np.abs(loss - prev_loss) < 1e-4:
             break
         prev_loss = loss
     return w, compute_mse(y, tx, w)

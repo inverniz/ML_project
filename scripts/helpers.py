@@ -1,4 +1,5 @@
 import numpy as np
+import numpy.linalg as la
 from scipy.misc import logsumexp
 
 def compute_mse(y, tx, w):
@@ -10,18 +11,13 @@ def compute_rmse(y, tx, w):
 
 def compute_gradient(y, tx, w):
     e = y - tx.dot(w)
-    return -tx.T.dot(e)/y.shape[0]
-
-def grad_logistic(y, x, w):
-    return x.dot(logistic_func(x.T.dot(w)) - y)
+    grad = -tx.T.dot(e)/y.shape[0]
+    return grad #/ la.norm(grad)
 
 def sigmoid(t):
     """apply sigmoid function on t."""
     return 1.0/(np.exp(-t)+1)
 
-def log_sum_exp(x):
-    return np.log(np.sum(b))
-    
 def compute_loss_logistic(y, tx, w):
     """compute the cost by negative log likelihood."""
     sigma_xn_w = sigmoid(tx @ w)
@@ -41,7 +37,8 @@ def compute_loss_logistic_reg(y, tx, w, lambda_):
 
 def compute_gradient_logistic(y, tx, w):
     """compute the gradient of loss."""
-    return tx.T @ (sigmoid(tx @ w) - y)
+    grad = tx.T @ (sigmoid(tx @ w) - y)
+    return grad# / la.norm(grad)
 
 def compute_gradient_logistic_reg(y, tx, w, lambda_):
     return compute_gradient_logistic(y, tx, w) + lambda_ * w
