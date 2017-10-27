@@ -1,0 +1,47 @@
+\section{Basics}
+\label{sec:basics}
+
+One of machine learning goal is to find the best function which fits a given data in order to predict values for future inputs. Problems are defined with the set $\{(y_n, x_n)\}$. Here, $y_n \in \mathbb{R}$ is the output associated to input $x_n \in \mathbb{R}^D$ which contains $D$ features. Solution consists to find the values of the element of the vector $w \in \mathbb{R}^D$ (weight) which minimizes the cost function
+
+\[ L(w) = \sum_{n=1}^{N} y_n - x_n^\intercal w \]
+
+We will describe six functions to find $w$. We will assume \texttt{tx} stands for the matrix $(N, D)$ where $x_n$ are aligned. \texttt{gamma} is the step size and lies $(0, 1)$. \texttt{lambda} is the regularization parameter. \texttt{y} is the vector of the outputs observed.
+
+\subsection{\texttt{least squares GD}}
+
+This function takes as input: \texttt{y}, \texttt{tx}, \texttt{initial\_w}, \texttt{max\_iters}, \texttt{gamma}.
+
+The principle is to follow the opposite direction of the gradient with respect to $w$
+
+\[ w^{t+1} = w^{t} - \gamma \nabla L(w^{t}). \]
+
+We approximate the minimum by iterating \texttt{max\_iters} times. Note: this works only if we have a convex function.
+
+
+\subsection{\texttt{least squares SGD}}
+
+This function has the same parameters as the previous one and almost the same algorithm. The problem with GD (gradient descent) is the price to pay for computing the gradient. The SGD simply takes one row chosen randomly at each iteration. By expectation we shall point to the same point as taking the true gradient.
+
+\subsection{\texttt{least\_squares}}
+
+The least squares regression using normal equations takes \texttt{y} and \texttt{tx} as inputs.
+
+Intuitively, the \texttt{least\_squares} approach is to project the wanted value to the space spanned by column of the \texttt{tx}. This is not possible when $D > N$ or when the matrix is ill-conditioned. In theses cases, it is better to use the SVD algorithm. This can be done in a single line in numpy.
+
+\subsection{\texttt{ridge\_regression}}
+
+This function takes \texttt{y}, \texttt{tx} and \texttt{lambda} as parameters.
+
+Sometimes the model fits the data very well, including the noise. This is called ``over-fitting'' and it is an undesirable effect. We use this function to avoid complex $w$ since we consider them unlikely to be correct. We can achieve it by adding the expression like the L2-norm of $w$ multiplied by \texttt{lambda}. 
+
+\subsection{\texttt{logistic\_regression}}
+
+This function takes \texttt{y}, \texttt{tx}, \texttt{initial\_w}, \texttt{max\_iters}, \texttt{gamma} as parameters.
+
+\texttt{Logistic\_regression} is typically used to attribute discrete values. It is used in classification.
+
+% TODO
+
+\subsection{reg\_logistic\_regression}
+%(y, tx, lambda, initial w, max iters, gamma)
+% TODO

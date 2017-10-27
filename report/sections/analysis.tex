@@ -1,0 +1,34 @@
+\section{Analysis}
+\label{sec:analysis}
+
+Most of the data contains noise, missing values or wrong values. That's why data must be carefully analyzed.
+
+\subsection{Data cleaning}
+
+% TODO: To add here the best result with naive approach (by taking all values)
+
+The data has $30$ features. When the value is unknown or cannot be used, it is set to $-999$. It appears $72.7544$\% of the rows contains at least one field which was $-999$.
+
+This leads us to know the fraction of unusable item per field. The features with no unusable value are not displayed.
+
+\begin{tabular}{rlr} \hline
+  Index & Feature & Fraction of $-999$ \\ \hline
+  0 & DER\_mass\_MMC & 0.152456 \\
+  4 & DER\_deltaeta\_jet\_jet & 0.709828 \\
+  5 & DER\_mass\_jet\_jet & 0.709828 \\
+  6 & DER\_prodeta\_jet\_jet & 0.709828 \\
+  12 & DER\_lep\_eta\_centrality & 0.709828 \\
+  23 & PRI\_jet\_leading\_pt & 0.399652 \\
+  24 & PRI\_jet\_leading\_eta & 0.399652 \\
+  25 & PRI\_jet\_leading\_phi & 0.399652 \\
+  26 & PRI\_jet\_subleading\_pt & 0.709828 \\
+  27 & PRI\_jet\_subleading\_eta & 0.709828 \\
+  28 & PRI\_jet\_subleading\_phi & 0.709828 \\ \hline
+\end{tabular}
+
+We observe there are $7$ features which cannot be used $70\%$ of the time. If we do not take them into account, the fraction of rows which contains at least one field of $-999$ drops to $44.7616$\%.
+
+\subsection{Feature engineering}
+
+
+\subsection{Cross validation}
