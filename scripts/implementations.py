@@ -1,4 +1,3 @@
-
 """some machine learning methods for project 1."""
 import numpy as np
 import numpy.linalg as la

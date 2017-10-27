@@ -59,3 +59,12 @@ def ridge_regression_with_poly(y, tx, lambda_, degree):
 def compute_mse_with_poly(y, tx, w, degree):
     tx_poly = build_poly(tx, degree)
     return compute_mse(y, tx_poly, w)
+
+def accuracy(y, tx, w):
+    res = tx.dot(w)
+    res[res <= 0] = -1
+    res[res > 0]  = 1
+    return 1-np.sum(y == res)/len(y)
+
+def accuracy_with_poly(y, tx, w, degree):
+    return accuracy(y, build_poly(tx, degree), w)
