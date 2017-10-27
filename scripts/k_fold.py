@@ -1,5 +1,5 @@
 import numpy as np
-from helpers import standardize, accuracy
+from helpers import standardize, accuracy, run_and_predict
 
 def build_k_indices(y, k_fold, seed):
     """build k indices for k-fold."""
@@ -13,7 +13,7 @@ def build_k_indices(y, k_fold, seed):
 
 
 def cross_validation(y, x, k_fold, function, loss_function, sup_args={}, sup_args_loss={}, seed = 1):
-    k_indices = build_k_indices(y, k_fold, 1)
+    k_indices = build_k_indices(y, k_fold, seed)
     total_loss_tr = 0
     total_loss_te = 0
     for k in range(k_fold):
@@ -41,3 +41,17 @@ def cross_validation(y, x, k_fold, function, loss_function, sup_args={}, sup_arg
 
     return total_loss_tr/k_fold, total_loss_te/k_fold
 
+
+def cross_validation_group(y, x, k_fold, function, sup_args=[{},{},{},{},{},{}], seed = 1):
+    k_indices = build_k_indices(y, k_fold, seed)
+    total_loss_tr = 0
+    total_loss_te = 0
+    for k in range(k_fold):
+        train_x = np.concatenate([x[k_indices[i]] for i, idx in enumerate(k_indices) if i != k])
+        train_y = np.concatenate([y[k_indices[i]] for i, idx in enumerate(k_indices) if i != k])
+        test_x = x[k_indices[k]]
+        test_y = y[k_indices[k]]
+        y_pred_train, y_pred_test = run_and_predict(train_x, train_y, test_x, function, sup_args)
+        total_loss_tr += (1-np.sum(y_pred_train == train_y)/len(train_y))
+        total_loss_te += (1-np.sum(y_pred_test == test_y)/len(test_y))
+    return total_loss_tr/k_fold, total_loss_te/k_fold

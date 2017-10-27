@@ -1,7 +1,7 @@
 import numpy as np
 import numpy.linalg as la
 from scipy.misc import logsumexp
-from implementations import *
+from proj1_helpers import *
 
 def compute_mse(y, tx, w):
     e = y - tx.dot(w)
@@ -53,6 +53,7 @@ def standardize(x):
     return (x - np.mean(x, axis=0))/np.std(x, axis=0)
 
 def ridge_regression_with_poly(y, tx, lambda_, degree):
+    from implementations import ridge_regression
     tx_ridge = build_poly(tx, degree)
     return ridge_regression(y, tx_ridge, lambda_)
 
@@ -68,3 +69,53 @@ def accuracy(y, tx, w):
 
 def accuracy_with_poly(y, tx, w, degree):
     return accuracy(y, build_poly(tx, degree), w)
+
+def get_group(x, y, n):
+    num_jet = int(n/2)
+    mass = n % 2 == 0
+
+    mask = x[:, 22] == num_jet
+    if num_jet == 2:
+        mask = mask | (x[:, 22] == 3)
+    if mass:
+        mask = mask & (x[:, 0] != -999)
+    else:
+        mask = mask & (x[:, 0] == -999)
+    x_group = x[mask]
+    group_mean = np.mean(x_group, axis=0)
+    x_group = x_group[:, (group_mean != -999) & (group_mean != 0) & (group_mean != num_jet)]
+    y_group = y[mask]
+    return x_group, y_group
+
+def run_for_group(x, y, n, function, sup_args = {}):
+    x_group, y_group = get_group(x, y, n)
+    mean = np.mean(x_group, axis=0)
+    std = np.std(x_group, axis=0)
+    x_group = (x_group - mean)/std
+    tx_group = np.c_[np.ones(len(y_group)), x_group]
+
+    args = {'y': y_group, 'tx': tx_group, **sup_args}
+    w, loss = function(**args)
+    return w, mean, std
+
+def predict_for_group(x, mean, std, w, n, num_pred, sup_args):
+    x_group, idxs = get_group(x, np.arange(num_pred), n)
+    x_group = (x_group - mean)/std
+    tx_group = np.c_[np.ones(len(idxs)), x_group]
+    if 'degree' in sup_args:
+        tx_group = build_poly(tx_group, sup_args['degree'])
+    y_pred = predict_labels(w, tx_group)
+    return y_pred, idxs
+
+def run_and_predict(x_train, y_train, x_test, function, sup_args=[{},{},{},{},{},{}]):
+    num_pred_train = x_train.shape[0]
+    num_pred_test = x_test.shape[0]
+    y_pred_train = np.zeros(num_pred_train)
+    y_pred_test = np.zeros(num_pred_test)
+    for n in range(6):
+        w, mean, std = run_for_group(x_train, y_train, n, function, sup_args[n])
+        y_pred_group_train, idxs = predict_for_group(x_train, mean, std, w, n, num_pred_train, sup_args[n])
+        np.put(y_pred_train, idxs, y_pred_group_train)
+        y_pred_group_test, idxs = predict_for_group(x_test, mean, std, w, n, num_pred_test, sup_args[n])
+        np.put(y_pred_test, idxs, y_pred_group_test)
+    return y_pred_train, y_pred_test
