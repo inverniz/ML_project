@@ -61,12 +61,17 @@ def compute_mse_with_poly(y, tx, w, degree):
     tx_poly = build_poly(tx, degree)
     return compute_mse(y, tx_poly, w)
 
-def accuracy(y, tx, w):
+def accuracy(y, tx, w, is_sigmoid=False):
     res = tx.dot(w)
-    res[res <= 0] = -1
-    res[res > 0]  = 1
+    if is_sigmoid:
+        res = sigmoid(res)
+        res[res <= 0.5] = 0
+        res[res > 0.5] = 1
+    else:
+        res[res <= 0] = -1
+        res[res > 0]  = 1
     return 1-np.sum(y == res)/len(y)
-
+    
 def accuracy_with_poly(y, tx, w, degree):
     return accuracy(y, build_poly(tx, degree), w)
 
