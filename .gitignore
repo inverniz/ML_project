@@ -1,0 +1,4 @@
+scripts/*.csv
+scripts/*.png
+scripts/.ipynb_checkpoints/
+scripts/__pycache__/
