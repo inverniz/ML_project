@@ -13,7 +13,7 @@ def compute_rmse(y, tx, w):
 def compute_gradient(y, tx, w):
     e = y - tx.dot(w)
     grad = -tx.T.dot(e)/y.shape[0]
-    return grad #/ la.norm(grad)
+    return grad / la.norm(grad)
 
 def sigmoid(t):
     """apply sigmoid function on t."""
@@ -23,6 +23,20 @@ def build_poly(tx, degree):
     if degree <= 1:
         return tx
     return np.column_stack([tx] + [tx[:,1:]**k for k in range(2,degree+1)])
+
+def logistic_GD(y, tx, initial_w, max_iters, gamma, degree):
+    tx = build_poly(tx, degree)
+    w = np.zeros(tx.shape[1])
+    prev_loss = 10000
+    for n_iter in range(max_iters):
+        grad = compute_gradient_logistic(y, tx, w)
+        w = w - gamma * grad
+        loss = compute_loss_logistic(y, tx, w)
+        if n_iter != 0 and np.abs(loss - prev_loss) < 1e-5:
+            break
+        prev_loss = loss
+    return w, loss
+
 
 def compute_loss_logistic(y, tx, w):
     """compute the cost by negative log likelihood."""
@@ -46,29 +60,109 @@ def compute_gradient_logistic(y, tx, w):
     grad = tx.T @ (sigmoid(tx @ w) - y)
     return grad# / la.norm(grad)
 
+def sample_data(y, x, seed, size_samples):
+    """sample from dataset."""
+    np.random.seed(seed)
+    num_observations = y.shape[0]
+    random_permuted_indices = np.random.permutation(num_observations)
+    y = y[random_permuted_indices]
+    x = x[random_permuted_indices]
+    return y[:size_samples], x[:size_samples]
+
+def batch_iter(y, tx, batch_size, num_batches=1, shuffle=True):
+    """
+    Generate a minibatch iterator for a dataset.
+    Takes as input two iterables (here the output desired values 'y' and the input data 'tx')
+    Outputs an iterator which gives mini-batches of `batch_size` matching elements from `y` and `tx`.
+    Data can be randomly shuffled to avoid ordering in the original data messing with the randomness of the minibatches.
+    Example of use :
+    for minibatch_y, minibatch_tx in batch_iter(y, tx, 32):
+        <DO-SOMETHING>
+    """
+    data_size = len(y)
+
+    if shuffle:
+        shuffle_indices = np.random.permutation(np.arange(data_size))
+        shuffled_y = y[shuffle_indices]
+        shuffled_tx = tx[shuffle_indices]
+    else:
+        shuffled_y = y
+        shuffled_tx = tx
+    for batch_num in range(num_batches):
+        start_index = batch_num * batch_size
+        end_index = min((batch_num + 1) * batch_size, data_size)
+        if start_index != end_index:
+            yield shuffled_y[start_index:end_index], shuffled_tx[start_index:end_index]
+
+def calculate_hessian(y, tx, w):
+    """return the hessian of the loss function."""
+    sigm_xn_w = sigmoid(tx @ w)
+    return tx.T @ (sigm_xn_w * (1-sigm_xn_w) * np.identity(y.shape[0])) @ tx
+
+def logistic_regression_newton(y, tx, lambda_, initial_w, max_iters):
+    w = initial_w
+    #prev_loss = 1000
+    for minibatch_y, minibatch_tx in batch_iter(y, tx, 16, max_iters):
+        #minibatch_y, minibatch_tx = sample_data(y, tx, 1, 16)
+        loss = compute_loss_logistic(minibatch_y, minibatch_tx, w)
+        w = w - lambda_ * (la.pinv(calculate_hessian(minibatch_y, minibatch_tx, w)) @ compute_gradient_logistic(minibatch_y, minibatch_tx, w))
+        #if np.abs(loss - prev_loss) < treshold:
+        #    break
+        #prev_loss = loss
+    return w, loss
+
+def logistic_regression_newton_with_poly(y, tx, lambda_, initial_w, max_iters, degree):
+    tx_poly = build_poly(tx, degree)
+    return logistic_regression_newton(y, tx_poly, lambda_, np.zeros(tx_poly.shape[1]), max_iters)
+
+
 def compute_gradient_logistic_reg(y, tx, w, lambda_):
     return compute_gradient_logistic(y, tx, w) + lambda_ * w
 
 def standardize(x):
     return (x - np.mean(x, axis=0))/np.std(x, axis=0)
 
+def least_squares_GD_with_poly(y, tx, initial_w, max_iters, gamma, degree):
+    from implementations import least_squares_GD
+    tx_augmented = build_poly(tx, degree)
+    return least_squares_GD(y, tx_augmented, np.zeros(tx_augmented.shape[1]), max_iters, gamma)
+
 def ridge_regression_with_poly(y, tx, lambda_, degree):
     from implementations import ridge_regression
     tx_ridge = build_poly(tx, degree)
     return ridge_regression(y, tx_ridge, lambda_)
 
+def reg_logistic_reg_with_poly(y, tx, lambda_, initial_w, max_iters, gamma, degree,seed=1):
+    from implementations import reg_logistic_regression
+    tx_augmented = build_poly(tx, degree)
+    return reg_logistic_regression(y, tx_augmented, lambda_, np.zeros(tx_augmented.shape[1]), max_iters, gamma)
+
 def compute_mse_with_poly(y, tx, w, degree):
     tx_poly = build_poly(tx, degree)
     return compute_mse(y, tx_poly, w)
 
-def accuracy(y, tx, w):
+def cut_at_percentile(x, percentile):
+    res = x.copy()
+    for i in range(x.shape[1]):
+        max_val = np.percentile(x[:,i], percentile, interpolation='midpoint')
+        res[x[:, i] > max_val, i] = max_val
+    return res
+
+
+def accuracy(y, tx, w, is_sigmoid=False):
     res = tx.dot(w)
-    res[res <= 0] = -1
-    res[res > 0]  = 1
+    if is_sigmoid:
+        res = sigmoid(res)
+        res[res <= 0.5] = 0
+        res[res > 0.5] = 1
+    else:
+        res[res <= 0] = -1
+        res[res > 0]  = 1
     return 1-np.sum(y == res)/len(y)
 
-def accuracy_with_poly(y, tx, w, degree):
-    return accuracy(y, build_poly(tx, degree), w)
+
+def accuracy_with_poly(y, tx, w, degree, is_sigmoid=False):
+    return accuracy(y, build_poly(tx, degree), w, is_sigmoid)
 
 def get_group(x, y, n):
     num_jet = int(n/2)

@@ -32,7 +32,7 @@ def cross_validation(y, x, k_fold, function, loss_function, sup_args={}, sup_arg
         w, loss_tr = function(**args)
         args_loss = {'y': train_y, 'tx': train_tx, 'w': w, **sup_args_loss}
         loss_tr = loss_function(**args_loss)
-
+        
         args_loss = {'y': test_y, 'tx': test_tx, 'w': w, **sup_args_loss}
         loss_te = loss_function(**args_loss)
 

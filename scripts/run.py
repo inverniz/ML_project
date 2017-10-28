@@ -72,28 +72,73 @@ from helpers import *
 #y_pred = predict_labels(w, tx_test)
 #create_csv_submission(ids_test, y_pred, "test.csv")
 labels = np.array(np.genfromtxt('../data/train.csv', delimiter=",", names=True).dtype.names[2:])
-filter_ = [idx for idx, label in enumerate(labels) if not 'Pri_tau_phi' in label or not 'PRI_lep_phi' in label]
+filter_ = [idx for idx, label in enumerate(labels) if 'phi' not in label]
 normalize = [idx for idx, label in enumerate(labels) if label in ['DER_mass_vis', 'PRI_tau_pt', 'PRI_lep_pt',\
                                                                   'PRI_met', 'PRI_jet_subleading_pt', 'DER_mass_MMC',\
-                                                                  'DER_mass_vis', 'DER_pt_tot', 'DER_sum_pt',\
+                                                                  'DER_pt_tot', 'DER_sum_pt',\
                                                                   'DER_pt_ratio_lep_tau', 'PRI_met_sumet',\
                                                                   'PRI_jet_leading_pt']]
+normalize = [idx for idx, label in enumerate(labels) if label in ['DER_mass_vis'
+                                                                  ]]
+
 def log_normalize(x):
     if x > 0:
         return np.log(x)
     return x
 log_normalize = np.vectorize(log_normalize)
 
+inv_log_cols = (0,1,2,3,4,5,7,8,9,10,12,13,16,19,21,23,26)
+#inv_log_cols = (0,1,2,3,5,7,8,9,12,13,16,19,21)
+def inv_log(x):
+    if x == -999:
+        return x
+    return np.log(1 / (1 + x))
+inv_log = np.vectorize(inv_log)
+
 args = [{'lambda_': 0.031, 'degree': 4}, {'lambda_': 1e-10, 'degree': 5}, {'lambda_': 1.29e-9, 'degree': 6},\
        {'lambda_': 0.00046, 'degree': 5}, {'lambda_': 0.00316, 'degree': 7}, {'lambda_': 2.78255e-6, 'degree': 3}]
-y, x, ids = load_csv_data('../data/train.csv')
-x[:, normalize] = log_normalize(x[:, normalize])
-x = x[:, filter_]
+args = [{'lambda_': 0, 'degree': 3}, {'lambda_': 1e-10, 'degree': 5}, {'lambda_': 1e-5, 'degree': 6},\
+       {'lambda_': 0, 'degree': 3}, {'lambda_': 0.0, 'degree': 6}, {'lambda_': 4.64e-3, 'degree': 3}]
 
+# Current best args, works with feature augmented and cut at 95
+args = [{'lambda_': 1.77e-8, 'degree': 6}, {'lambda_': 4.316e-8, 'degree': 4}, {'lambda_': 1e-3, 'degree': 8},\
+       {'lambda_': 1e-5, 'degree': 4}, {'lambda_': 4.64e-4, 'degree': 7}, {'lambda_': 5.004e-3, 'degree': 3}]
+
+# Cut at 95 only
+args = [{'lambda_': 0, 'degree': 7}, {'lambda_': 0, 'degree': 5}, {'lambda_': 1e-4, 'degree': 9},\
+       {'lambda_': 1.66e-8, 'degree': 4}, {'lambda_': 4.64e-4, 'degree': 8}, {'lambda_': 0, 'degree': 4}]
+
+
+y, x, ids = load_csv_data('../data/train.csv')
 y_test, x_test, ids_test = load_csv_data('../data/test.csv')
-x_test[:, normalize] = log_normalize(x_test[:, normalize])
-x_test = x_test[:, filter_]
+
+x = cut_at_percentile(x, 95)
+#x = np.hstack((x, inv_log(x[:, inv_log_cols])))
+#x[:, normalize] = log_normalize(x[:, normalize])
+#x = x[:, filter_]
+
+x_test = cut_at_percentile(x_test, 95)
+#x_test = np.hstack((x_test, inv_log(x_test[:, inv_log_cols])))
+#x_test[:, normalize] = log_normalize(x_test[:, normalize])
+#x_test = x_test[:, filter_]
 
 y_pred_train, y_pred_test = run_and_predict(x, y, x_test, ridge_regression_with_poly, args)
 print(1-np.sum(y_pred_train==y)/len(y))
 create_csv_submission(ids_test, y_pred_test, "submission.csv")
+
+#x_train_orig = x.copy()
+#x_test_orig = x_test.copy()
+#for i in inv_log_cols:
+#    x = x_train_orig.copy()
+#    x_test = x_test_orig.copy()
+#
+#    x = np.hstack((x, inv_log(x[:, i]).reshape(x.shape[0], -1)))
+#    x[:, normalize] = log_normalize(x[:, normalize])
+#    #x = x[:, filter_]
+#    
+#    x_test = np.hstack((x_test, inv_log(x_test[:, i].reshape(x_test.shape[0], -1))))
+#    x_test[:, normalize] = log_normalize(x_test[:, normalize])
+#    #x_test = x_test[:, filter_]
+#    
+#    y_pred_train, y_pred_test = run_and_predict(x, y, x_test, ridge_regression_with_poly, args)
+#    print(i, 1-np.sum(y_pred_train==y)/len(y))
