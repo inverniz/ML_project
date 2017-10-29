@@ -24,16 +24,37 @@ def build_poly(tx, degree):
         return tx
     return np.column_stack([tx] + [tx[:,1:]**k for k in range(2,degree+1)])
 
-def logistic_GD(y, tx, initial_w, max_iters, gamma, degree):
+def logistic_GD(y, tx, initial_w,lambda_, max_iters, gamma, degree):
     tx = build_poly(tx, degree)
     w = np.zeros(tx.shape[1])
     prev_loss = 10000
+    minibatches_y, minibatches_tx = get_minibatches(y, tx, 4096)
+    #prev_grads = w
+    velocity = w
+    eta = 0.9
     for n_iter in range(max_iters):
-        grad = compute_gradient_logistic(y, tx, w)
-        w = w - gamma * grad
-        loss = compute_loss_logistic(y, tx, w)
-        if n_iter != 0 and np.abs(loss - prev_loss) < 1e-5:
-            break
+        idx_batch = np.random.randint(0, len(minibatches_y))
+        minibatch_y = minibatches_y[idx_batch]
+        minibatch_tx = minibatches_tx[idx_batch]
+
+        # ADAgrad
+        #prev_grads += grad**2
+        #w = w - gamma * np.diag(1.0/(np.sqrt(prev_grads)+1e-9)) @ grad
+
+        # Vanilla
+        #grad = compute_gradient_logistic_reg(minibatch_y, minibatch_tx, w, lambda_)
+        #w = w - gamma * grad
+
+        # Nesterov
+        grad = compute_gradient_logistic_reg(minibatch_y, minibatch_tx, w - eta*velocity, lambda_)
+        velocity = eta*velocity + gamma * grad
+        w = w - velocity
+    
+        loss = compute_loss_logistic_reg(minibatch_y, minibatch_tx, w, lambda_)
+        #if n_iter != 0 and np.abs(loss - prev_loss) < 1e-6:
+        #    break
+        #if (n_iter+1) % 100 == 0:
+        #    print(n_iter, np.abs(loss - prev_loss))
         prev_loss = loss
     return w, loss
 
@@ -68,6 +89,15 @@ def sample_data(y, x, seed, size_samples):
     y = y[random_permuted_indices]
     x = x[random_permuted_indices]
     return y[:size_samples], x[:size_samples]
+
+def get_minibatches(y, tx, batch_size):
+    minibatches_y = []
+    minibatches_tx = []
+    data_size = len(y)
+    for i in range(0, data_size, batch_size):
+        minibatches_y.append(y[i:i+batch_size])
+        minibatches_tx.append(tx[i:i+batch_size])
+    return minibatches_y, minibatches_tx
 
 def batch_iter(y, tx, batch_size, num_batches=1, shuffle=True):
     """
