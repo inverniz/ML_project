@@ -8,7 +8,7 @@
 \title{Machine Learning Report}
 
 \author{
-  Raphael Barman, Hakim Invernizzi, Rehan \\
+  Raphael Barman, Hakim Invernizzi, Rehan Mulakhel\\
   \textit{EPFL students}
 }
 
@@ -52,22 +52,84 @@ The weight is computed by solving the ridge regression equation, yielding $w = (
 \ref{fig:figure1} (b) shows the method gives 26.25\% inaccuracy in the best case, reinforcing what previously said about regularization.
 \section{Our Model}
 \subsection{Exploratory Data Analisis and Feature Processing}
-EDA produces the following observations:
+\subsubsection{Null values}
+The presence of null values is well defined and allowed us to separate the
+dataset in 6 groups. We noticed that all null values could be
+explained by the the number of jet (PRI\_jet\_num) and by the presence or not of a
+measure for the mass (DER\_mass\_MMC), thus we created 6 groups, for number of jet
+$\lbrace 0, 1, 2-3 \rbrace$ and the presence or not of mass measure.
 
-The training dataset can be divided in six groups based on the entry values of feature 0 and 22. These six highly intra-correlated group are treated separately in the subsequent operations.
+\subsubsection{Percentiles}
 
-Features 15, 18, 20, 25 and 28 don't provide useful information because the distribution of both type of particles (s and b) based on these feature is  identically uniform.
+By looking at the 95th percentile and the maximum values of each feature, we saw
+that in most cases, there were certainly a lot of outliers in some features.
 
-Features 0, 1, 2, 3, 5, 8, 9, 10, 13, 19, 21, 23, 26 and 29 follow an exponential distribution and are therefore standardized before being used in the ML method.
+\subsubsection{Histograms}
+
+We used histograms to have an idea of the underlaying distribution.
+
+Using the histograms, we saw that the features related to 'phi' (PRI\_tau\_phi,
+PRI\_lep\_phi, PRI\_met\_phi, PRI\_jet\_leading\_phi, PRI\_jet\_subleading\_phi)
+have an uniform distribution that is the same
+for 'signal' and for 'background', this could mean that these features do not add
+any relevant information for the classification.
+
+We also noticed that some features (DER\_mass\_MMC, DER\_mass\_transverse\_met\_lep, DER\_mass\_vis, DER\_pt\_h, DER\_mass\_jet\_jet, DER\_pt\_tot, DER\_sum\_pt, DER\_pt\_ratio\_lep\_tau, PRI\_tau\_pt, PRI\_met, PRI\_met\_sumet, PRI\_jet\_leading\_pt, PRI\_jet\_subleading\_pt, PRI\_jet\_all\_pt) have a long tail or are exponential, thus it could be a good
+idea to log-normalize theme before using them.
+
 \subsection{ML method and Cross-validation}
-The chosen ML method is Ridge Regression because it has the lowest inaccuracy among the six baseline methods.
-The tuning of the model consisted of a process of iterative cross-validation applied to Ridge Regression, with and without making use of extended feature vectors.
-This allowed to find the following optimal polynomial degrees and lambda values for each of the six groups:
-$(d_0 = 4, \lambda_0 = 0.031)$
-$(d_1 = 5, \lambda_1 = 1e-10)$
-$(d_2 = 6, \lambda_2 = 1.29e-9)$
-$(d_3 = 5, \lambda_3 = 0.00046)$
-$(d_4 = 7, \lambda_4 = 0.00316)$
-$(d_5 = 3, \lambda_5 = 2.78255e-6)$
+We chose to use Ridge Regression as the baseline since it has the lowest
+inaccuracy.
+All accuracy results that are given have been made on a 10-fold cross validation
+using Ridge Regression. The baseline, i.e. Ridge Regression on a ten-fold, is
+of accuracy $0.255152$ with $\lambda = 10^{-10}$
+We will now explore five different ways of improving the baseline.
 
+\subsubsection{Group separation}
+Using the observation we made above, we separated the dataset in 6 groups. Our
+hope was that since we do not have to deal with null values, the algorithms
+would find a better approximation of the underlaying distribution. We noticed an
+improvement over the baseline: an accuracy of $0.234424$ with $\lambda =
+10^{-10}$.
+
+\subsubsection{Percentile cut}
+We tried to remove all values above a certain percentile and replace them with
+the percentile, in order to delete all outliers and allowing to have a less
+complex model. Using the 95th percentile, we obtained an improvement: an
+accuracy of $0.248784$ with $\lambda = 10^{-10}$
+
+\subsubsection{Log-normalization}
+Since some features had the shape of power laws and/or exponentials, we tried to
+log-normalize where possible (we applied log on any value $>0$ in these
+features). However, it did not result in an improvement over the baseline, with
+an accuracy of $0.2618$ with $\lambda = 10^{-10}$. This could be explained by
+the need of keeping the same distribution shape in order to be able to
+differentiate 'signal' and 'background'.
+
+\subsubsection{Removing features}
+Since we noticed that the shape of all features related to 'phi' were uniforms,
+we tried to remove those features in order to reduce the model complexity. We
+got a slight improvement, with an accuracy of $0.252068$ and $\lambda =
+10^{-10}$.
+
+\subsubsection{Features augmentation}
+In order to account for the model complexity, one can add some polynomial basis
+to improve the fit. We obtained an improvement with a polynomial basis of degree
+3: accuracy $= 0.229108$, $\lambda = 10^{-10}$. The improvement is quite
+important, this shows that the underlying model is certainly of higher degree
+than one.
+
+\subsubsection{Final Model}
+We tried different combination of the 4 improvements we found above and found
+the best result with a mix of group separation, percentile cut and polynomial
+basis. We found for results: accuracy of $0.1681$ with parameters for each groups:
+$(d_0 = 7, \lambda_0 = 0)$
+$(d_1 = 5, \lambda_1 = 0)$
+$(d_2 = 9, \lambda_2 = 10^{-4})$
+$(d_3 = 4, \lambda_3 = 1.66 \cdot 10^{-8})$
+$(d_4 = 8, \lambda_4 = 4.64 \cdot 10^{-4})$
+$(d_5 = 4, \lambda_5 = 0)$
+Note that until now, the usage over the Ridge Regression over least squares did
+not make much sense since we always had negligible lambdas, however, with our
+final model, some group benefits from the ridge regression.
 \end{document}
