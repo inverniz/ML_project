@@ -5,316 +5,153 @@
 
 
 \begin{document}
-\title{Writing Scientific Papers and Software}
+\title{Machine Learning Report}
 
 \author{
-  Cheng Soon Ong\\
-  \textit{Department of Computer Science, ETH Zurich, Switzerland}
+  Raphael Barman, Hakim Invernizzi, Rehan Mulakhel\\
+  \textit{EPFL students}
 }
 
 \maketitle
 
-\begin{abstract}
-  A critical part of scientific discovery is the
-  communication of research findings to peers or the general public.
-  Mastery of the process of scientific communication improves the
-  visibility and impact of research. While this guide is a necessary
-  tool for learning how to write in a manner suitable for publication
-  at a scientific venue, it is by no means sufficient, on its own, to
-  make its reader an accomplished writer. 
-  This guide should be a starting point for further development of 
-  writing skills.
-\end{abstract}
-
-\section{Introduction}
-
-The aim of writing a paper is to infect the mind of your reader with
-the brilliance of your idea~\cite{jones08}. 
-The hope is that after reading your
-paper, the audience will be convinced to try out your idea. In other
-words, it is the medium to transport the idea from your head to your
-reader's head. 
-In the following
-section, we show a common structure of scientific papers and briefly
-outline some tips for writing good papers in
-Section~\ref{sec:tips-writing}.
-
-At that
-point, it is important that the reader is able to reproduce your
-work~\cite{schwab00,wavelab,gentleman05}. This is why it is also
-important that if the work has a computational component, the software
-associated with producing the results are also made available in a
-useful form. Several guidelines for making your user's experience with
-your software as painless as possible is given in
-Section~\ref{sec:tips-software}.
-
-This brief guide is by no means sufficient, on its own, to
-make its reader an accomplished writer. The reader is urged to use the
-references to further improve his or her writing skills.
-
-\section{The Structure of a Paper}
-\label{sec:structure-paper}
-
-Scientific papers usually begin with the description of the problem,
-justifying why the problem is interesting. Most importantly, it argues
-that the problem is still unsolved, or that the current solutions are
-unsatisfactory. This leads to the main gist of the paper, which is
-``the idea''. The authors then show evidence, using derivations or
-experiments, that the idea works. Since science does not occur in a
-vacuum, a proper comparison to the current state of the art is often
-part of the results. Following these ideas, papers usually have the
-following structure:
-\begin{description}
-\item[Abstract] \ \\
-  Short description of the whole paper, to help the
-  reader decide whether to read it.
-\item[Introduction] \ \\
-  Describe your problem and state your
-  contributions.
-\item[Models and Methods] \ \\
-  Describe your idea and how it was implemented to solve
-  the problem. Survey the related work, giving credit where credit is
-  due.
-\item[Results] \ \\
-  Show evidence to support your claims made in the
-  introduction.
-\item[Discussion] \ \\
-  Discuss the strengths and weaknesses of your
-  approach, based on the results. Point out the implications of your
-  novel idea on the application concerned.
-\item[Summary] \ \\
-  Summarize your contributions in light of the new
-  results.
-\end{description}
-
-
-\section{Tips for Good Writing}
-\label{sec:tips-writing}
-
-The ideas for good writing have come
-from~\cite{editor10,jones08,anderson04}.
-
-\subsection{Getting Help}
-One should try to get a draft read by as many friendly people as
-possible. And remember to treat your test readers with respect. If
-they are unable to understand something in your paper, then it is
-highly likely that your reviewers will not understand it
-either. Therefore, do not be defensive about the criticisms you get,
-but use it as an opportunity to improve the paper. Before your submit
-your friends to the pain of reading your draft, please \emph{use a
-  spell checker}.
-
-\subsection{Abstract}
-The abstract should really be written last, along with the title of
-the paper. The four points that should be covered~\cite{jones08}:
-\begin{enumerate}
-\item State the problem.
-\item Say why it is an interesting problem.
-\item Say what your solution achieves.
-\item Say what follows from your solution.
-\end{enumerate}
-
-\subsection{Figures and Tables}
-
-\begin{figure}[tbp]
-  \centering
-  \includegraphics[width=\columnwidth]{denoised_signal_1d}
-  \caption{Signal compression and denoising using the Fourier basis.}
-  \vspace{-3mm}
-  \label{fig:denoise-fourier}
-\end{figure}
-\begin{figure}[htbp]
-  \centering
-  \includegraphics[width=\columnwidth]{local_wdenoised_1d}
-  \vspace{-3mm}
-  \caption{Signal compression and denoising using the Daubechies wavelet basis.}
-  \label{fig:denoise-wavelet}
+\begin{figure}
+\begin{center}
+\includegraphics[width=4.5cm]{cross_validation_least_squares_GD.png}
+\includegraphics[width=4.5cm]{cross_validation_least_squares_SGD.png}
+\includegraphics[width=4.5cm]{cross_validation_ridge_regression.png}
+\includegraphics[width=4.5cm]{cross_validation_logistic_regression.png}
+\includegraphics[width=4.5cm]{cross_validation_reg_logistic_regression.png}
+ \end{center}
+ \begin{center}
+ \caption{\label{fig:figure1}Result of Cross-Validation with 10 folds. On the X-axis we have the ML method parameter to be tuned, on the Y-axis a measure of the inaccuracy. From top to bottom: (a) least squares GD (b) least squares SGD (c) ridge regression (d) logistic regression (e) logistic regression with regularization}
+ \end{center}
 \end{figure}
 
-Use examples and illustrations to clarify ideas and results. For
-example, by comparing Figure~\ref{fig:denoise-fourier} and
-Figure~\ref{fig:denoise-wavelet}, we can see the two different
-situations where Fourier and wavelet basis perform well. 
+\section{Part I: Machine learning methods implementation}
+Here is the description of our implementation of the six machine learning methods.\\
+Please note that we defined our own metric to estimate prediction error, which
+is not the MSE but simply the percentage of uncorrectly predicted outputs, which
+we call inaccuracy.
+This metric is used exclusively to evaluate performance and is not part of the
+implementation.\\
+All the results presented were found with a 10-fold cross-validation.
+ \subsection{Linear regression using gradient descent}
+The implementation is simple: we iteratively update the initial weight by subtracting a pondered gradient.
+Figure \ref{fig:figure1} (a) shows the cross-validation results with 500
+iterations and gamma taking value in the range $[10^{-3}, 10^{0}]$ with step
+$10$. It can be noted that the method gives around 66\% inaccuracy in the best
+case, and performs best when gamma is on the order of $10^{-1}$. This quite bad
+performance can be explained by the fact that we only iterated 500 times, thus
+the gradient descent may not have converged. However, more iterations is costly
+because the gradient cost $O(N\cdot D)$ to compute.
 
-\subsection{Models and Methods}
-The models and methods
-section should describe what was
-done to answer the research question, describe how it was done,
-justify the experimental design, and
-explain how the results were analyzed.
+\subsection{Linear regression using stochastic gradient descent}
+The difference compared to the previous method is that at each iteration a
+random sample is chosen in order to
+create size-1 batches. The gradient is then computed, pondered and used to
+update the weight. Figure \ref{fig:figure1} (b) shows the cross-validation
+results with 10000 iterations and gamma taking value in the range $[10^{-6},
+10^{-1}]$ with step $10$. it can be noted that the method also gives 66\%
+inaccuracy in the best case, and performs best when gamma is on the order of
+$10^{-3}$. The result is coherent with the theory, a stochastic gradient descent
+is cheap to compute, however with a batch of size 1, it has a tendency to have a
+lot of variance and to be slow to converge.
+\subsection{Least squares regression}
+The pseudo-inverse of the feature matrix \textit{tx} is computed and then multiplied with the classification vector \textit{y} to obtain the weight.
+The inaccuracy is of around 25.5\% for both train and test dataset. The result
+is coherent, it is the least square solution, however, it is costly to compute.
+\subsection{Ridge regression}
+The weight is computed by solving the ridge regression equation, yielding $w = (X^{T}X + \lambda'I)^{-1}X^{T}y$.
+Figure \ref{fig:figure1} (c) shows the cross-validation results with lambda taking value in the range $[10^{-8}, 10^{0}]$ with step $10$. It can be noted that the performance of the ridge regression is comparable to that of the simple least square regression, suggesting that regularisation applied to the whole dataset provides little improvement. This might mean that the problem is well-conditioned, or in other words that the model isn't over- nor under-fitting.
+\subsection{Logistic regression}
+The weight is updated by subtracting a gradient whose ponderation takes into
+account its hessian matrix. Figure \ref{fig:figure1} (d) shows the
+cross-validation results with 10000 iterations and gamma taking value in the
+range $[10^{-10}, 10^{-1}]$ with step $10$. It can be noted that method gives
+around 25.7 \% inaccuracy in the best case. This gives a much better result than
+the linear regression with gradient descent, which is coherent since we have
+indeed a binary classification problem.
+\subsection{Regularized logistic regression}
+Logistic regression with the addition of a penalty term to account for linearly separable data. Figure \ref{fig:figure1} (e) shows the cross-validation results with 10000 iterations, gamma on the order of $8*10^{-3}$ and lambda taking value in the range $[10^{-10}, 10^{-1}]$ with step $10$. In can be noted that the method gives around 26.25\% inaccuracy in the best case, reinforcing what previously said about regularisation.
+\section{Our Model}
+\subsection{Exploratory Data Analisis and Feature Processing}
+\subsubsection{Null values}
+The presence of null values is well defined and allowed us to separate the
+dataset in 6 groups. We noticed that all null values could be
+explained by the the number of jet (PRI\_jet\_num) and by the presence or not of a
+measure for the mass (DER\_mass\_MMC), thus we created 6 groups, for number of jet
+$\lbrace 0, 1, 2-3 \rbrace$ and the presence or not of mass measure.
 
-The model refers to the underlying mathematical model or structure which 
-you use to describe your problem, or that your solution is based on. 
-The methods on the other hand, are the algorithms used to solve the problem. 
-In some cases, the suggested method directly solves the problem, without having it 
-stated in terms of an underlying model. Generally though it is a better practice to have 
-the model figured out and stated clearly, rather than presenting a method without specifying 
-the model. In this case, the method can be more easily evaluated in the task of fitting 
-the given data to the underlying model.
+\subsubsection{Percentiles}
 
-The methods part of this section, is not a step-by-step, directive,
-protocol as you might see in your lab manual, but detailed enough such
-that an interested reader can reproduce your
-work~\cite{anderson04,wavelab}.
+By looking at the 95th percentile and the maximum values of each feature, we saw
+that in most cases, there were certainly a lot of outliers in some features.
 
-The methods section of a research paper provides the information by
-which a study's validity is judged.
-Therefore, it requires a clear and precise description of how an
-experiment was done, and the rationale
-for why specific experimental procedures were chosen.
-It is usually helpful to
-structure the methods section by~\cite{kallet04methods}:
-\begin{enumerate}
-\item Layout the model you used to describe the problem or the solution.
-\item Describing the algorithms used in the study, briefly including
-  details such as hyperparameter values (e.g. thresholds), and
-  preprocessing steps (e.g. normalizing the data to have mean value of
-  zero).
-\item Explaining how the materials were prepared, for example the
-  images used and their resolution.
-\item Describing the research protocol, for example which examples
-  were used for estimating the parameters (training) and which were
-  used for computing performance.
-\item Explaining how measurements were made and what
-  calculations were performed. Do not reproduce the full source code in
-  the paper, but explain the key steps.
-\end{enumerate}
+\subsubsection{Histograms}
 
-\subsection{Results}
+We used histograms to have an idea of the underlaying distribution.
 
-Organize the results section based on the sequence of table and
-figures you include. Prepare the tables and figures as soon as all
-the data are analyzed and arrange them in the sequence that best
-presents your findings in a logical way. A good strategy is to note,
-on a draft of each table or figure, the one or two key results you
-want to address in the text portion of the results.
-The information from the figures is
-summarized in Table~\ref{tab:fourier-wavelet}.
+Using the histograms, we saw that the features related to 'phi' have an uniform
+distribution that is the same for 'signal' and for 'background', this could mean
+that these features do not add any relevant information for the classification.
 
-\begin{table*}[htbp]
-  \centering
-  \begin{tabular}[c]{|l||l|l|l|}
-    \hline
-    Basis&Support&Suitable signals&Unsuitable signals\\
-    \hline
-    Fourier&global&sine like&localized\\
-    wavelet&local&localized&sine like\\
-    \hline
-  \end{tabular}
-  \caption{Characteristics of Fourier and wavelet basis.}
-  \label{tab:fourier-wavelet}
-\end{table*}
+We also noticed that some features have a long tail or are exponential, thus it could be a good
+idea to log-normalize theme before using them.
 
-When reporting computational or measurement results, always
-report the mean (average value) along with a measure of variability
-(standard deviation(s) or standard error of the mean).
+\subsection{ML method and Cross-validation}
+We chose to use Ridge Regression as the baseline since it has the lowest
+inaccuracy.
+All inaccuracy results that are given have been made on a 10-fold cross validation
+using Ridge Regression. The baseline, i.e. Ridge Regression on a ten-fold, is
+of inaccuracy $0.255152$ with $\lambda = 10^{-10}$
+We will now explore five different ways of improving the baseline.
 
+\subsubsection{Group separation}
+Using the observation we made above, we separated the dataset in 6 groups. Our
+hope was that since we do not have to deal with null values, the algorithms
+would find a better approximation of the underlaying distribution. We noticed an
+improvement over the baseline: an inaccuracy of $0.234424$ with $\lambda =
+10^{-10}$.
 
-\section{Tips for Good Software}
-\label{sec:tips-software}
+\subsubsection{Percentile cut}
+We tried to remove all values above a certain percentile and replace them with
+the percentile, in order to delete all outliers and allowing to have a less
+complex model. Using the 95th percentile, we obtained an improvement: an
+inaccuracy of $0.248784$ with $\lambda = 10^{-10}$
 
-There is a lot of literature (for example~\cite{hunt99pragmatic} and
-\cite{spolsky04software}) on how to write software. It is not the
-intention of this section to replace software engineering
-courses. However, in the interests of reproducible
-research~\cite{schwab00}, there are a few guidelines to make your
-reader happy:
-\begin{itemize}
-\item Have a \texttt{README} file that (at least) describes what your
-  software does, and which commands to run to obtain results. Also
-  mention anything special that needs to be set up, such as
-  toolboxes\footnote{For those who are
-  particularly interested, other common structures can be found at
-  \url{http://en.wikipedia.org/wiki/README} and
-  \url{http://www.gnu.org/software/womb/gnits/}.}.
-\item A list of authors and contributors can be included in a file
-  called \texttt{AUTHORS}, acknowledging any help that you may have
-  obtained. For small projects, this information is often also
-  included in the \texttt{README}.
-\item Use meaningful filenames, and not \texttt{temp1.py},
-  \texttt{temp2.py}. 
-\item Document your code. Each file should at least have a short
-  description about its reason for existence. Non obvious steps in the
-  code should be commented. Functions arguments and return values should be described.
-\item Describe how the results presented in your paper can be reproduced.
-\end{itemize}
+\subsubsection{Log-normalization}
+Since some features had the shape of power laws and/or exponentials, we tried to
+log-normalize where possible (we applied log on any value $>0$ in these
+features). However, it did not result in an improvement over the baseline, with
+an inaccuracy of $0.2618$ with $\lambda = 10^{-10}$. This could be explained by
+the need of keeping the same distribution shape in order to be able to
+differentiate 'signal' and 'background'.
 
+\subsubsection{Removing features}
+Since we noticed that the shape of all features related to 'phi' were uniforms,
+we tried to remove those features in order to reduce the model complexity. We
+got a slight improvement, with an inaccuracy of $0.252068$ and $\lambda =
+10^{-10}$.
 
-\subsection{\LaTeX{} Primer}
-\label{sec:latex-primer}
+\subsubsection{Features augmentation}
+In order to account for the model complexity, one can add some polynomial basis
+to improve the fit. We obtained an improvement with a polynomial basis of degree
+3: inaccuracy $= 0.229108$, $\lambda = 10^{-10}$. The improvement is quite
+important, this shows that the underlying model is certainly of higher degree
+than one.
 
-\LaTeX{} is one of the most commonly used document preparation systems
-for scientific journals and conferences. It is based on the idea
-that authors should be able to focus on the content of what they are
-writing without being distracted by its visual presentation.
-The source of this file can be used as a starting point for how to use
-the different commands in \LaTeX{}. We are using an IEEE style for
-this course.
+\subsubsection{Final Model}
+We tried different combination of the 4 improvements we found above and found
+the best result with a mix of group separation, percentile cut and polynomial
+basis. We found for results: inaccuracy of $0.1681$ with parameters for each groups:
+$(d_0 = 7, \lambda_0 = 0)$
+$(d_1 = 5, \lambda_1 = 0)$
+$(d_2 = 9, \lambda_2 = 10^{-4})$
+$(d_3 = 4, \lambda_3 = 1.66 \cdot 10^{-8})$
+$(d_4 = 8, \lambda_4 = 4.64 \cdot 10^{-4})$
+$(d_5 = 4, \lambda_5 = 0)$.
 
-\subsubsection{Installation}
-
-There are various different packages available for processing \LaTeX{}
-documents.
-On OSX use Mac\TeX{}
-(\url{http://www.tug.org/mactex/}). On Windows, use for example Mik\TeX{} (\url{http://miktex.org/}).
-
-\subsubsection{Compiling \LaTeX{}}
-Your directory should contain at least~4 files, in addition to image
-files. Images should be in \texttt{.png}, \texttt{.jpg} or
-\texttt{.pdf} format.
-\begin{itemize}
-\item IEEEtran.cls
-\item IEEEtran.bst
-\item groupXX-submission.tex
-\item groupXX-literature.bib
-\end{itemize}
-Note that you should replace groupXX with your chosen group name.
-Then, from the command line, type:
-\begin{verbatim}
-$ pdflatex groupXX-submission
-$ bibtex groupXX-literature
-$ pdflatex groupXX-submission
-$ pdflatex groupXX-submission
-\end{verbatim}
-This should give you a PDF document \texttt{groupXX-submission.pdf}.
-
-\subsubsection{Equations}
-
-There are three types of equations available: inline equations, for
-example $y=mx + c$, which appear in the text, unnumbered equations
-$$y=mx + c,$$
-which are presented on a line on its own, and numbered equations
-\begin{equation}
-  \label{eq:linear}
-  y = mx + c
-\end{equation}
-which you can refer to at a later point (Equation~(\ref{eq:linear})).
-
-\subsubsection{Tables and Figures}
-
-Tables and figures are ``floating'' objects, which means that the text
-can flow around it.
-Note
-that \texttt{figure*} and \texttt{table*} cause the corresponding
-figure or table to span both columns.
-
-
-
-\section{Summary}
-
-The aim of a scientific paper is to convey the idea or discovery of
-the researcher to the minds of the readers. The associated software
-package provides the relevant details, which are often only briefly
-explained in the paper, such that the research can be reproduced.
-To write good papers, identify your key idea, make your contributions
-explicit, and use examples and illustrations to describe the problems
-and solutions.
-
-\section*{Acknowledgements}
-The author thanks Christian Sigg for his careful reading and helpful
-suggestions.
-
-\bibliographystyle{IEEEtran}
-\bibliography{literature}
-
+Note that until now, the usage over the Ridge Regression over least squares did
+not make much sense since we always had negligible lambdas, however, with our
+final model, some group benefits from the ridge regression.
 \end{document}

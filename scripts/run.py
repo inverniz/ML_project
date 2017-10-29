@@ -1,18 +1,21 @@
 import numpy as np
 from proj1_helpers import *
 from implementations import *
+from helpers import *
 
-y, x, ids = load_csv_data('../data/train.csv', sub_sample=True)
-print("Shape of x:",x.shape)
-print("Shape of y:",y.shape)
-x = (x - np.mean(x, axis=0))/np.std(x, axis=0)
-num_samples = len(y)
-tx = np.c_[np.ones(num_samples), x]
-w, loss = logistic_regression(y, tx, np.zeros(tx.shape[1]), 100000,0.00012915496650148841)
-#w, loss = ridge_regression(y, tx, 1e-7)
-print(loss)
-#y_test, x_test, ids_test = load_csv_data('../data/test.csv')
-#x_test = (x_test - np.mean(x_test))/np.std(x_test)
-#tx_test = np.c_[np.ones(len(y_test)),x_test]
-#y_pred = predict_labels(w, tx_test)
-#create_csv_submission(ids_test, y_pred, "test.csv")
+# These parameters for the ridge regression were found using a 10-fold cross validation
+args = [{'lambda_': 0, 'degree': 7}, {'lambda_': 0, 'degree': 5}, {'lambda_': 1e-4, 'degree': 9},\
+       {'lambda_': 1.66e-8, 'degree': 4}, {'lambda_': 4.64e-4, 'degree': 8}, {'lambda_': 0, 'degree': 4}]
+
+
+y, x, ids = load_csv_data('../data/train.csv')
+y_test, x_test, ids_test = load_csv_data('../data/test.csv')
+
+# We remove outliers above 95th percentile
+x = cut_at_percentile(x, 95)
+x_test = cut_at_percentile(x_test, 95)
+
+y_pred_train, y_pred_test = run_and_predict(x, y, x_test, ridge_regression_with_poly, args)
+
+print(1-np.sum(y_pred_train==y)/len(y))
+create_csv_submission(ids_test, y_pred_test, "submission.csv")

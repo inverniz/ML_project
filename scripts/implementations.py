@@ -1,5 +1,3 @@
-
-"""some machine learning methods for project 1."""
 import numpy as np
 import numpy.linalg as la
 from helpers import *
@@ -21,7 +19,8 @@ def least_squares_SGD(y, tx, initial_w, max_iters, gamma, seed=1):
     for idx in np.random.randint(0,data_size-1,max_iters):
         minibatch_y = np.array([y[idx]])
         minibatch_tx = np.array([tx[idx]])
-        gradient = compute_gradient(minibatch_y, minibatch_tx, w)/data_size
+        gradient = compute_gradient(minibatch_y, minibatch_tx, w)
+        gradient = gradient
         w = w - gamma * gradient
     return w, compute_mse(y, tx, w)
 
@@ -48,17 +47,19 @@ def logistic_regression(y, tx, initial_w, max_iters, gamma, seed=1):
         minibatch_tx = np.array([tx[idx]])
         grad = compute_gradient_logistic(minibatch_y, minibatch_tx, w)
         w = w - gamma * grad
+    #return w, compute_mse(y, tx, w)
     return w, compute_loss_logistic(y, tx, w)
 
 
 """Regularized logistic regression using gradient descent or SGD."""
 def reg_logistic_regression(y, tx, lambda_, initial_w, max_iters, gamma, seed=1):
     np.random.seed(seed)
-    w = inital_w
+    w = initial_w
     data_size = len(y)
     for iter, idx in enumerate(np.random.randint(0,data_size-1,max_iters)):
         minibatch_y = np.array(y[idx])
         minibatch_tx = np.array([tx[idx]])
         grad = compute_gradient_logistic_reg(minibatch_y, minibatch_tx, w, lambda_)
         w = w - gamma * grad
+    #return w, compute_mse(y, tx, w)
     return w, compute_loss_logistic_reg(y, tx, w, lambda_)

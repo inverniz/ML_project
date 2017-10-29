@@ -1,0 +1,19 @@
+\BOOKMARK [1][-]{section.1}{Part I: Machine learning methods implementation}{}% 1
+\BOOKMARK [2][-]{subsection.1.1}{Linear regression using gradient descent}{section.1}% 2
+\BOOKMARK [2][-]{subsection.1.2}{Linear regression using stochastic gradient descent}{section.1}% 3
+\BOOKMARK [2][-]{subsection.1.3}{Least squares regression}{section.1}% 4
+\BOOKMARK [2][-]{subsection.1.4}{Ridge regression}{section.1}% 5
+\BOOKMARK [2][-]{subsection.1.5}{Logistic regression}{section.1}% 6
+\BOOKMARK [2][-]{subsection.1.6}{Regularized logistic regression}{section.1}% 7
+\BOOKMARK [1][-]{section.2}{Our Model}{}% 8
+\BOOKMARK [2][-]{subsection.2.1}{Exploratory Data Analisis and Feature Processing}{section.2}% 9
+\BOOKMARK [3][-]{subsubsection.2.1.1}{Null values}{subsection.2.1}% 10
+\BOOKMARK [3][-]{subsubsection.2.1.2}{Percentiles}{subsection.2.1}% 11
+\BOOKMARK [3][-]{subsubsection.2.1.3}{Histograms}{subsection.2.1}% 12
+\BOOKMARK [2][-]{subsection.2.2}{ML method and Cross-validation}{section.2}% 13
+\BOOKMARK [3][-]{subsubsection.2.2.1}{Group separation}{subsection.2.2}% 14
+\BOOKMARK [3][-]{subsubsection.2.2.2}{Percentile cut}{subsection.2.2}% 15
+\BOOKMARK [3][-]{subsubsection.2.2.3}{Log-normalization}{subsection.2.2}% 16
+\BOOKMARK [3][-]{subsubsection.2.2.4}{Removing features}{subsection.2.2}% 17
+\BOOKMARK [3][-]{subsubsection.2.2.5}{Features augmentation}{subsection.2.2}% 18
+\BOOKMARK [3][-]{subsubsection.2.2.6}{Final Model}{subsection.2.2}% 19
