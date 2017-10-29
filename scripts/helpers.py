@@ -28,7 +28,7 @@ def logistic_GD(y, tx, initial_w,lambda_, max_iters, gamma, degree):
     tx = build_poly(tx, degree)
     w = np.zeros(tx.shape[1])
     prev_loss = 10000
-    minibatches_y, minibatches_tx = get_minibatches(y, tx, 4096)
+    minibatches_y, minibatches_tx = get_minibatches(y, tx, 256)
     #prev_grads = w
     velocity = w
     eta = 0.9
