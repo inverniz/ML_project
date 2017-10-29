@@ -5,15 +5,9 @@ from helpers import *
 """Linear regression using gradient descent."""
 def least_squares_GD(y, tx, initial_w, max_iters, gamma):
     w = initial_w
-    # Arbitrary, needs tweaking
-    prev_loss = 10000
     for n_iter in range(max_iters):
         gradient = compute_gradient(y, tx, w)
         w = w - gamma*gradient
-        loss = compute_mse(y, tx, w)
-        if n_iter != 0 and np.abs(loss - prev_loss) < 1e-4:
-            break
-        prev_loss = loss
     return w, compute_mse(y, tx, w)
 
 
@@ -25,7 +19,8 @@ def least_squares_SGD(y, tx, initial_w, max_iters, gamma, seed=1):
     for idx in np.random.randint(0,data_size-1,max_iters):
         minibatch_y = np.array([y[idx]])
         minibatch_tx = np.array([tx[idx]])
-        gradient = compute_gradient(minibatch_y, minibatch_tx, w)/data_size
+        gradient = compute_gradient(minibatch_y, minibatch_tx, w)
+        gradient = gradient
         w = w - gamma * gradient
     return w, compute_mse(y, tx, w)
 
