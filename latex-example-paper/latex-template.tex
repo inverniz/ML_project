@@ -33,23 +33,21 @@ Please note that we defined our own metric to estimate prediction error, which i
 This metric is used exclusively to evaluate performance and isn't part of the implementation.
  \subsection{Linear regression using gradient descent}
 The implementation is simple: we iteratively update the initial weight by subtracting a pondered gradient.
-\ref{fig:figure1} (a) shows the method gives around 66\% inaccuracy in the best case, and performs best when gamma is on the order of $10^{-1}$. 
+Figure \ref{fig:figure1} (a) shows the method gives around 66\% inaccuracy in the best case, and performs best when gamma is on the order of $10^{-1}$. 
 \subsection{Linear regression using stochastic gradient descent}
 The difference compared to the previous method is that at each iteration the dataset is accessed at random indexes in order to
 create size-1 batches. The batch gradient is then computed, pondered and used to update the weight.
-\ref{fig:figure1} (b) shows the method gives 26\% inaccuracy in the best case, and performs best when gamma is on the order of $10^{2}$. 
+Figure \ref{fig:figure1} (b) shows the method also gives 66\% inaccuracy in the best case, and performs best when gamma is on the order of $10^{-3}$. 
 \subsection{Least squares regression}
 The pseudo-inverse of the feature matrix \textit{tx} is computed and then multiplied with the classification vector \textit{y} to obtain the weight.
 The inaccuracy is of around 25.5\% for both train and test dataset.
 \subsection{Ridge regression}
 The weight is computed by solving the ridge regression equation, yielding $w = (X^{T}X + \lambda'I)^{-1}X^{T}y$.
-\ref{fig:figure1} (c) shows that the performance of the ridge regression is comparable to that of the simple least square regression, suggesting that regularisation applied to the whole dataset provides little improvement.
+Figure \ref{fig:figure1} (c) shows that the performance of the ridge regression is comparable to that of the simple least square regression, suggesting that regularisation applied to the whole dataset provides little improvement. This suggests that the problem is well-posed, or in other words that it isn't over- nor underfitting.
 \subsection{Logistic regression}
-//describe
-\ref{fig:igure1} (d) shows the method gives around 25.7 \% inaccuracy in the best case
+The weight is updated by subtracting a gradient whose ponderation takes into account its hessian matrix. Figure \ref{fig:figure1} (d) shows the method gives around 25.7 \% inaccuracy in the best case.
 \subsection{Regularized logistic regression}
-//describe
-\ref{fig:figure1} (b) shows the method gives 26.25\% inaccuracy in the best case, reinforcing what previously said about regularization.
+Logistic regression with the addition of a penalty term to account for linearly separable data. Figure \ref{fig:figure1} (b) shows the method gives around 26.25\% inaccuracy in the best case, reinforcing what previously said about regularization.
 \section{Our Model}
 \subsection{Exploratory Data Analisis and Feature Processing}
 EDA produces the following observations:
