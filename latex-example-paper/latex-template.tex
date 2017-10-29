@@ -30,7 +30,7 @@
 \section{Part I: Machine learning methods implementation}
 Here is the description of our implementation of the six machine learning methods.\\
 Please note that we defined our own metric to estimate prediction error, which is not the MSE but simply the percentage of uncorrectly predicted outputs, which we call inaccuracy. 
-This metric is used exclusively to evaluate performance and isn't part of the implementation.
+This metric is used exclusively to evaluate performance and is not part of the implementation.
  \subsection{Linear regression using gradient descent}
 The implementation is simple: we iteratively update the initial weight by subtracting a pondered gradient.
 Figure \ref{fig:figure1} (a) shows the method gives around 66\% inaccuracy in the best case, and performs best when gamma is on the order of $10^{-1}$. 
@@ -126,7 +126,8 @@ $(d_1 = 5, \lambda_1 = 0)$
 $(d_2 = 9, \lambda_2 = 10^{-4})$
 $(d_3 = 4, \lambda_3 = 1.66 \cdot 10^{-8})$
 $(d_4 = 8, \lambda_4 = 4.64 \cdot 10^{-4})$
-$(d_5 = 4, \lambda_5 = 0)$
+$(d_5 = 4, \lambda_5 = 0)$.
+
 Note that until now, the usage over the Ridge Regression over least squares did
 not make much sense since we always had negligible lambdas, however, with our
 final model, some group benefits from the ridge regression.
