@@ -1,3 +1,25 @@
+# File description
+## implementations.py
+Contains the 6 baseline functions
+## proj1_helpers.py
+Contains some helpers to load data and predict
+## helpers.py
+Contains:
+- Loss functions
+- Gradients functions
+- Feature processing helpers
+- Misc. helpers
+## cross_validation.py
+Contains a complete cross-validation tool-set
+## run.py
+Contains the model, it assumes that the data is located at '../data/'
+## Exploratory Data Analysis.ipynb
+Which explains most of the data analysis rationale
+## Baseline_testing.ipynb
+Which place a baseline for the 6 basics functions
+## Model_testing.ipynb
+Which shows the effects on some strategies
+
 # Data preparation
 - All the data has been centered to zero mean and scaled to have unity variance.
 - Each feature has been clamped to its 95th percentile to avoid outliers.
