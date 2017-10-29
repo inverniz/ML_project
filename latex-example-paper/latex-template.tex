@@ -29,22 +29,48 @@
 
 \section{Part I: Machine learning methods implementation}
 Here is the description of our implementation of the six machine learning methods.\\
-Please note that we defined our own metric to estimate prediction error, which is not the MSE but simply the percentage of uncorrectly predicted outputs, which we call inaccuracy. 
-This metric is used exclusively to evaluate performance and is not part of the implementation.
+Please note that we defined our own metric to estimate prediction error, which
+is not the MSE but simply the percentage of uncorrectly predicted outputs, which
+we call inaccuracy.
+This metric is used exclusively to evaluate performance and is not part of the
+implementation.\\
+All the results presented were found with a 10-fold cross-validation.
  \subsection{Linear regression using gradient descent}
 The implementation is simple: we iteratively update the initial weight by subtracting a pondered gradient.
-Figure \ref{fig:figure1} (a) shows the cross-validation results with 500 iterations and gamma taking value in the range $[10^{-3}, 10^{0}]$ with step $10$. It can be noted that the method gives around 66\% inaccuracy in the best case, and performs best when gamma is on the order of $10^{-1}$. 
+Figure \ref{fig:figure1} (a) shows the cross-validation results with 500
+iterations and gamma taking value in the range $[10^{-3}, 10^{0}]$ with step
+$10$. It can be noted that the method gives around 66\% inaccuracy in the best
+case, and performs best when gamma is on the order of $10^{-1}$. This quite bad
+performance can be explained by the fact that we only iterated 500 times, thus
+the gradient descent may not have converged. However, more iterations is costly
+because the gradient cost $O(N\cdot D)$ to compute.
+
 \subsection{Linear regression using stochastic gradient descent}
-The difference compared to the previous method is that at each iteration the dataset is accessed at random indexes in order to
-create size-1 batches. The batch gradient is then computed, pondered and used to update the weight. Figure \ref{fig:figure1} (b) shows the cross-validation results with 10000 iterations and gamma taking value in the range $[10^{-6}, 10^{-1}]$ with step $10$. it can be noted that the method also gives 66\% inaccuracy in the best case, and performs best when gamma is on the order of $10^{-3}$. 
+The difference compared to the previous method is that at each iteration a
+random sample is chosen in order to
+create size-1 batches. The gradient is then computed, pondered and used to
+update the weight. Figure \ref{fig:figure1} (b) shows the cross-validation
+results with 10000 iterations and gamma taking value in the range $[10^{-6},
+10^{-1}]$ with step $10$. it can be noted that the method also gives 66\%
+inaccuracy in the best case, and performs best when gamma is on the order of
+$10^{-3}$. The result is coherent with the theory, a stochastic gradient descent
+is cheap to compute, however with a batch of size 1, it has a tendency to have a
+lot of variance and to be slow to converge.
 \subsection{Least squares regression}
 The pseudo-inverse of the feature matrix \textit{tx} is computed and then multiplied with the classification vector \textit{y} to obtain the weight.
-The inaccuracy is of around 25.5\% for both train and test dataset.
+The inaccuracy is of around 25.5\% for both train and test dataset. The result
+is coherent, it is the least square solution, however, it is costly to compute.
 \subsection{Ridge regression}
 The weight is computed by solving the ridge regression equation, yielding $w = (X^{T}X + \lambda'I)^{-1}X^{T}y$.
 Figure \ref{fig:figure1} (c) shows the cross-validation results with lambda taking value in the range $[10^{-8}, 10^{0}]$ with step $10$. It can be noted that the performance of the ridge regression is comparable to that of the simple least square regression, suggesting that regularisation applied to the whole dataset provides little improvement. This might mean that the problem is well-conditioned, or in other words that the model isn't over- nor under-fitting.
 \subsection{Logistic regression}
-The weight is updated by subtracting a gradient whose ponderation takes into account its hessian matrix. Figure \ref{fig:figure1} (d) shows the cross-validation results with 10000 iterations and gamma taking value in the range $[10^{-10}, 10^{-1}]$ with step $10$. It can be noted that method gives around 25.7 \% inaccuracy in the best case.
+The weight is updated by subtracting a gradient whose ponderation takes into
+account its hessian matrix. Figure \ref{fig:figure1} (d) shows the
+cross-validation results with 10000 iterations and gamma taking value in the
+range $[10^{-10}, 10^{-1}]$ with step $10$. It can be noted that method gives
+around 25.7 \% inaccuracy in the best case. This gives a much better result than
+the linear regression with gradient descent, which is coherent since we have
+indeed a binary classification problem.
 \subsection{Regularized logistic regression}
 Logistic regression with the addition of a penalty term to account for linearly separable data. Figure \ref{fig:figure1} (e) shows the cross-validation results with 10000 iterations, gamma on the order of $8*10^{-3}$ and lambda taking value in the range $[10^{-10}, 10^{-1}]$ with step $10$. In can be noted that the method gives around 26.25\% inaccuracy in the best case, reinforcing what previously said about regularisation.
 \section{Our Model}
@@ -65,13 +91,11 @@ that in most cases, there were certainly a lot of outliers in some features.
 
 We used histograms to have an idea of the underlaying distribution.
 
-Using the histograms, we saw that the features related to 'phi' (PRI\_tau\_phi,
-PRI\_lep\_phi, PRI\_met\_phi, PRI\_jet\_leading\_phi, PRI\_jet\_subleading\_phi)
-have an uniform distribution that is the same
-for 'signal' and for 'background', this could mean that these features do not add
-any relevant information for the classification.
+Using the histograms, we saw that the features related to 'phi' have an uniform
+distribution that is the same for 'signal' and for 'background', this could mean
+that these features do not add any relevant information for the classification.
 
-We also noticed that some features (DER\_mass\_MMC, DER\_mass\_transverse\_met\_lep, DER\_mass\_vis, DER\_pt\_h, DER\_mass\_jet\_jet, DER\_pt\_tot, DER\_sum\_pt, DER\_pt\_ratio\_lep\_tau, PRI\_tau\_pt, PRI\_met, PRI\_met\_sumet, PRI\_jet\_leading\_pt, PRI\_jet\_subleading\_pt, PRI\_jet\_all\_pt) have a long tail or are exponential, thus it could be a good
+We also noticed that some features have a long tail or are exponential, thus it could be a good
 idea to log-normalize theme before using them.
 
 \subsection{ML method and Cross-validation}
