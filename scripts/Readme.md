@@ -30,10 +30,10 @@ Which shows the effects on some strategies
     4. Group 3: 1 jet, no mass
     5. Group 4: 2-3 jet, mass
     6. Group 5: 2-3 jet, no mass
-- In the 6 groups, all nulls values have been removed (since the columns were null)
+- In the 6 groups, all null values have been removed (since the columns are null)
 
 # Feature generation
-We generated polynomial basis to improve the result of the ridge regression for each group.
+We generate polynomial basis to improve the result of the ridge regression for each group.
 
 # Cross-validation
 We used cross-validation to:
@@ -44,7 +44,7 @@ We used cross-validation to:
   removing features with uniform distribution.
   
 # Final model
-We tried all combinations of our different optimization and compared the results
+We try all combinations of our different optimization and compare the results
 with cross-validation to finally only retain
 three:
 - Group separation
