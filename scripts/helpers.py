@@ -16,11 +16,13 @@ def compute_loss_logistic(y, tx, w):
     return - loss/y.shape[0]
 
 def compute_loss_logistic_reg(y, tx, w, lambda_):
+    """"Compute the cost for the logisitc mehtods"""
     return compute_loss_logistic(y, tx, w) + lambda_/2.0 * (w.T @ w)
 
 ### Gradient Functions ###
 
 def compute_gradient(y, tx, w):
+    """Compute the gradient for the point w"""
     e = y - tx.dot(w)
     grad = -tx.T.dot(e)/y.shape[0]
     return grad
@@ -35,6 +37,7 @@ def compute_gradient_logistic(y, tx, w):
     return grad
 
 def compute_gradient_logistic_reg(y, tx, w, lambda_):
+    """Compute the logistic gradient and adds penalty term"""
     return compute_gradient_logistic(y, tx, w) + lambda_ * w
 
 ### Feature Processing ###
