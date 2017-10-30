@@ -47,7 +47,6 @@ def logistic_regression(y, tx, initial_w, max_iters, gamma, seed=1):
         minibatch_tx = np.array([tx[idx]])
         grad = compute_gradient_logistic(minibatch_y, minibatch_tx, w)
         w = w - gamma * grad
-    #return w, compute_mse(y, tx, w)
     return w, compute_loss_logistic(y, tx, w)
 
 
@@ -61,5 +60,4 @@ def reg_logistic_regression(y, tx, lambda_, initial_w, max_iters, gamma, seed=1)
         minibatch_tx = np.array([tx[idx]])
         grad = compute_gradient_logistic_reg(minibatch_y, minibatch_tx, w, lambda_)
         w = w - gamma * grad
-    #return w, compute_mse(y, tx, w)
     return w, compute_loss_logistic_reg(y, tx, w, lambda_)
