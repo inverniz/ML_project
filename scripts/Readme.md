@@ -33,7 +33,7 @@ Which shows the effects on some strategies
 - In the 6 groups, all null values have been removed (since the columns are null)
 
 # Feature generation
-We generate polynomial basis to improve the result of the ridge regression for each group.
+We generated polynomial basis to improve the result of the ridge regression for each group.
 
 # Cross-validation
 We used cross-validation to:
@@ -44,7 +44,7 @@ We used cross-validation to:
   removing features with uniform distribution.
   
 # Final model
-We try all combinations of our different optimization and compare the results
+We tried all combinations of our different optimization and compared the results
 with cross-validation to finally only retain
 three:
 - Group separation
